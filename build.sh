@@ -1,8 +1,13 @@
 #!/bin/sh
 
-export PATH=$PATH:/tool/gcc_linaro/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin
-
-export CROSS_COMPILER=aarch64-linux-gnu-
+if [ "$1" = "arm64" ];then
+	export CROSS_COMPILER=aarch64-linux-gnu-
+elif [ "$1" = "arm" ];then
+	export CROSS_COMPILER=arm-linux-gnueabi-
+else
+	echo "Not support ARCH:$1"
+	exit 1;
+fi
 export TARGET_CC=${CROSS_COMPILER}gcc
 export TARGET_LD=${CROSS_COMPILER}ld
 export TARGET_AR=${CROSS_COMPILER}ar
@@ -12,8 +17,11 @@ export BUILD_CC=gcc
 
 ./bootstrap
 
+if [ "$1" = "arm64" ];then
 LDFLAGS=-static ./configure --target=aarch64-linux-gnu --host=aarch64-linux-gnu --build=x86_64-pc-linux-gnu
-
+else
+LDFLAGS=-static ./configure --target=arm-linux-gnueabi --host=arm-linux-gnueabi --build=x86_64-pc-linux-gnu
+fi
 
 make
 
